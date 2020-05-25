@@ -1,8 +1,6 @@
 FROM golang AS build
 
-RUN git clone http://github.com/mathiasstadler/p2cli  --branch r2 --single-branch 
-RUN cd p2cli
-RUN make
+RUN cd / && git clone http://github.com/mathiasstadler/p2cli  --tags r2 --single-branch && cd r2 && git branch && make -d && ls -l && pwd
 
 # RUN go get -u -v github.com/mathiasstadler/p2cli
 # WORKDIR $GOPATH/src/github.com/mathiasstadler/p2cli
@@ -11,5 +9,6 @@ RUN make
 #    -o /p2 .
 
 FROM scratch
-COPY --from=build /p2 /p2
+COPY --from=build /r2/p2 /p2
+COPY tests/data.p2 /data.p2
 ENTRYPOINT ["/p2"]
