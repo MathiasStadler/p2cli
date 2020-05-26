@@ -8,7 +8,7 @@ RUN cd / && git clone http://github.com/mathiasstadler/p2cli  --tags r2 --single
 #     -ldflags "-extldflags '-static' -X main.Version=$(shell git describe --long --dirty)" \
 #    -o /p2 .
 
-FROM scratch
+FROM debian:10
 COPY --from=build /r2/p2 /p2
 COPY tests/data.p2 /data.p2
 ENTRYPOINT ["/p2"]
