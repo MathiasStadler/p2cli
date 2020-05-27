@@ -1,0 +1,39 @@
+FROM ubuntu:18.04 AS build
+# https://launchpad.net/~longsleep/+archive/ubuntu/golang-backports
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt  install -y software-properties-common
+
+RUN add-apt-repository ppa:longsleep/golang-backports && \
+ apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y golang-1.14-go git
+
+RUN find / -name go
+
+# Set necessary environmet variables needed for our image
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=arm64 \
+    GOROOT=/usr/lib/go-1.14 
+
+ENV     PATH="${GOROOT}/bin:${PATH}"
+
+RUN /usr/lib/go-1.14/bin/go version
+
+
+RUN echo $PATH
+RUN echo $GOROOT
+RUN cd / && git clone http://github.com/mathiasstadler/p2cli  --tags r2 --single-branch && cd r2 && git branch && make && ls -l && pwd
+
+# RUN go get -u -v github.com/mathiasstadler/p2cli
+# WORKDIR $GOPATH/src/github.com/mathiasstadler/p2cli
+# RUN CGO_ENABLED=0 GOOS=linux go build -a --tags r2\
+#     -ldflags "-extldflags '-static' -X main.Version=$(shell git describe --long --dirty)" \
+#    -o /p2 .
+
+# RUN find / -name p2
+
+# FROM ubuntu:18.04
+#COPY  /r2/p2 /p2
+
+
+ENTRYPOINT ["/bin/bash"]
